@@ -4,6 +4,7 @@ DASHBOARD=https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-rc6/aio/
 KIND_CONFIG=cluster-config.yml
 METAL_CONFIG=metallb-configmap.yml #https://kind.sigs.k8s.io/examples/loadbalancer/metallb-configmap.yaml
 METAL_USAGE=usage.yaml #https://kind.sigs.k8s.io/examples/loadbalancer/usage.yaml
+KIND_INGRESS=kind-ingress.yml
 
 .PHONY: default
 default:
@@ -25,6 +26,31 @@ config_metallb:
 # @for _ in {1..10}; do curl 172.18.255.200:5678 done
 # @kubectl get pods -n metallb-system --watch
 
+.PHONY: kind_ingress
+kind_ingress:
+	@kind delete cluster
+	@kind create cluster --config=$(KIND_INGRESS)
+
+.PHONY: kind_nginx
+kind_nginx: 
+	@kubectl apply -f kind-nginx.yml 
+
+# https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
+
+.PHONY: kind_nginx_ingress
+kind_nginx_ingress:   
+	@kubectl apply -f kind-nginx-ingress.yml
+
+.PHONY: kind_nginx_ingress_check
+kind_nginx_ingress_check:
+	@curl localhost/foo
+	@curl localhost/bar
+
+# kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/usage.yam
+# should output "foo"
+# curl localhost/foo
+# should output "bar"
+# curl localhost/bar
 
 .PHONY: kind
 kind: 
@@ -48,4 +74,6 @@ minik:
 	@minikube addons enable metrics-server
 	@minikube addons enable dashboard
 
-
+get_resources:
+	@kubectl api-resources --verbs=list -o name | xargs -n 1 kubectl get -o name
+	

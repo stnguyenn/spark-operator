@@ -1,0 +1,74 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations:
+    meta.helm.sh/release-name: prometheus
+    meta.helm.sh/release-namespace: monitoring
+  creationTimestamp: "2021-05-24T19:15:33Z"
+  generation: 1
+  labels:
+    app: kube-prometheus-stack-operator
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: kube-prometheus-stack
+    app.kubernetes.io/version: 16.0.1
+    chart: kube-prometheus-stack-16.0.1
+    heritage: Helm
+    release: prometheus
+  managedFields:
+  - apiVersion: monitoring.coreos.com/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          .: {}
+          f:meta.helm.sh/release-name: {}
+          f:meta.helm.sh/release-namespace: {}
+        f:labels:
+          .: {}
+          f:app: {}
+          f:app.kubernetes.io/instance: {}
+          f:app.kubernetes.io/managed-by: {}
+          f:app.kubernetes.io/part-of: {}
+          f:app.kubernetes.io/version: {}
+          f:chart: {}
+          f:heritage: {}
+          f:release: {}
+      f:spec:
+        .: {}
+        f:endpoints: {}
+        f:namespaceSelector:
+          .: {}
+          f:matchNames: {}
+        f:selector:
+          .: {}
+          f:matchLabels:
+            .: {}
+            f:app: {}
+            f:release: {}
+    manager: Go-http-client
+    operation: Update
+    time: "2021-05-24T19:15:33Z"
+  name: prometheus-kube-prometheus-operator
+  namespace: monitoring
+  resourceVersion: "830"
+  uid: 01bea462-3820-4271-b786-4d3307bd8ad1
+spec:
+  endpoints:
+  - honorLabels: true
+    port: https
+    scheme: https
+    tlsConfig:
+      ca:
+        secret:
+          key: ca
+          name: prometheus-kube-prometheus-admission
+          optional: false
+      serverName: prometheus-kube-prometheus-operator
+  namespaceSelector:
+    matchNames:
+    - monitoring
+  selector:
+    matchLabels:
+      app: kube-prometheus-stack-operator
+      release: prometheus

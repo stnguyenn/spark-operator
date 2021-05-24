@@ -5,9 +5,9 @@ default:
 
 minikube:
 	@minikube delete
-	@minikube start -n 2
+	@minikube start --cpus 4 --memory 4g
 
-promet: minikube
+promet: 
 	@kubectl create namespace monitoring
 	@helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 	@helm repo update
