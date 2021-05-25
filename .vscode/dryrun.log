@@ -1,5 +1,5 @@
 make --dry-run --always-make --keep-going --print-directory
-make: Entering directory `/Users/stephennguyen/dev/kube/github/spark-operator'
+make: Entering directory '/home/steve/dev/kube/spark-operator'
 echo hello kube
-make: Leaving directory `/Users/stephennguyen/dev/kube/github/spark-operator'
+make: Leaving directory '/home/steve/dev/kube/spark-operator'
  

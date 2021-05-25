@@ -3,6 +3,10 @@
 CHART=./helm-charts/charts/kube-prometheus-stack
 NS="monitoring"
 EX_APP=example-app.yml
+HELM=helm
+RBAC=prom_rbac.yaml
+SAMPLE_PROM=prometheus.yaml
+PROM_STACK=prom_stack.yml
 
 default:
 	@echo hello-promet
@@ -14,22 +18,32 @@ minikube:
 # @minikube start --cpus 4 --memory 4g
 
 update: 
-	@cd ./helm-charts/charts/kube-prometheus-stack && helm dependency update
+	@cd ./helm-charts/charts/kube-prometheus-stack && $(HELM) dependency update
 
 promet: minikube
 	@kubectl create namespace $(NS)
-	@helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-	@helm repo update
-	@helm install prometheus $(CHART) -n $(NS)
+	@$(HELM) repo add prometheus-community https://prometheus-community.github.io/helm-charts
+	@$(HELM) repo update
+	@$(HELM) install prometheus $(CHART) -n $(NS)
 
 svc_prom:
 	@minikube service prometheus-kube-prometheus-prometheus -n monitoring
 
-example_app:
-	@kubectl apply -f $(EX_APP)
+prom_stack:
+	@kubectl apply -f $(PROM_STACK)
 
-bundle:
+sample_promet:
+	@kubectl apply -f $(SAMPLE_PROM)
+
+bundle_rbac:
+	@kubectl apply -f $(RBAC)
+
+bundle: minikube
 	@kubectl apply -f bundle.yml
 
+svc_bund:
+	@minikube service prometheus-operated
 
+svc_sample:
+	@kubectl port-forward svc/prometheus 9090
 
