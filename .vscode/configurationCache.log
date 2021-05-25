@@ -1,0 +1,1 @@
+{"buildTargets":["config_metallb","default","get_resources","kind","kind_ingress","kind_nginx","kind_nginx_ingress","kind_nginx_ingress_check","metallb","minik","nginx"],"launchTargets":[],"customConfigurationProvider":{"workspaceBrowse":{"browsePath":[],"compilerArgs":[]},"fileIndex":[]}}

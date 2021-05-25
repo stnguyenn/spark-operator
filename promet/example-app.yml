@@ -1,54 +1,112 @@
 
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: example-app
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: example-app
-  template:
-    metadata:
-      labels:
-        app: example-app
-    spec:
-      containers:
-      - name: example-app
-        image: fabxc/instrumented_app
-        ports:
-        - name: web
-          containerPort: 8080
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: example-app
+# spec:
+#   replicas: 3
+#   selector:
+#     matchLabels:
+#       app: example-app
+#   template:
+#     metadata:
+#       labels:
+#         app: example-app
+#     spec:
+#       containers:
+#       - name: example-app
+#         image: fabxc/instrumented_app
+#         ports:
+#         - name: web
+#           containerPort: 8080
   
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: example-app
-  labels:
-    app: example-app
-spec:
-  selector:
-    app: example-app
-  ports:
-  - name: web
-    port: 8080
+# ---
+# kind: Service
+# apiVersion: v1
+# metadata:
+#   name: example-app
+#   labels:
+#     app: example-app
+# spec:
+#   selector:
+#     app: example-app
+#   ports:
+#   - name: web
+#     port: 8080
 
+# ---
+# apiVersion: monitoring.coreos.com/v1
+# kind: PodMonitor
+# metadata:
+#   name: example-app
+#   labels:
+#     team: frontend
+# spec:
+#   selector:
+#     matchLabels:
+#       app: example-app
+#   podMetricsEndpoints:
+#   - port: web
+
+# ---
+
+# apiVersion: monitoring.coreos.com/v1
+# kind: ServiceMonitor
+# metadata:
+#   name: example-app
+#   labels:
+#     team: frontend
+# spec:
+#   selector:
+#     matchLabels:
+#       app: example-app
+#       release: prometheus
+#   endpoints:
+#   - port: web
+
+# ---
+# apiVersion: monitoring.coreos.com/v1
+# kind: Prometheus
+# metadata:
+#   name: prometheus-pod
+# spec:
+#   serviceAccountName: prometheus
+#   podMonitorSelector:
+#     matchLabels:
+#       team: frontend
+#   resources:
+#     requests:
+#       memory: 400Mi
+#   enableAdminAPI: false
 ---
 apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
+kind: Prometheus
 metadata:
-  name: example-app
-  labels:
-    team: frontend
+  name: prometheus-svc
+  namespace: monitoring
 spec:
-  selector:
+  serviceAccountName: prometheus
+  serviceMonitorSelector:
     matchLabels:
-      app: example-app
-      release: prometheus
-  endpoints:
-  - port: web
-
+      team: frontend
+  resources:
+    requests:
+      memory: 400Mi
+  enableAdminAPI: false
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: prometheus
+# spec:
+#   type: ClusterIP
+#   ports:
+#   - name: web
+#     port: 9090
+#     protocol: TCP
+#     targetPort: web
+#   selector:
+#     prometheus: prometheus
   
 
 

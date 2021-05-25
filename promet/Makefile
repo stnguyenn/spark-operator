@@ -28,5 +28,8 @@ svc_prom:
 example_app:
 	@kubectl apply -f $(EX_APP)
 
+bundle:
+	@kubectl apply -f bundle.yml
+
 
 
