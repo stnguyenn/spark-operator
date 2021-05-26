@@ -7,6 +7,7 @@ HELM=helm
 RBAC=prom_rbac.yaml
 SAMPLE_PROM=prometheus.yaml
 PROM_STACK=prom_stack.yml
+GRAF_ING=ingress.yml
 
 default:
 	@echo hello-promet
@@ -20,14 +21,23 @@ minikube:
 update: 
 	@cd ./helm-charts/charts/kube-prometheus-stack && $(HELM) dependency update
 
-promet: minikube
+template:
+	@$(HELM) template prometheus $(CHART) -n $(NS) > log.yml
+
+promet: #minikube
 	@kubectl create namespace $(NS)
 	@$(HELM) repo add prometheus-community https://prometheus-community.github.io/helm-charts
 	@$(HELM) repo update
 	@$(HELM) install prometheus $(CHART) -n $(NS)
 
+grafa_ing:
+	@kubectl apply -f $(GRAF_ING)
+
 svc_prom:
 	@minikube service prometheus-kube-prometheus-prometheus -n monitoring
+
+svc_grafa:
+	@kubectl port-forward --namespace monitoring service/prometheus-grafana 3000:80
 
 prom_stack:
 	@kubectl apply -f $(PROM_STACK)
