@@ -12,7 +12,7 @@ default:
 
 minikube:
 	@minikube delete
-	@minikube start --cpus 8 --memory 8g
+	@minikube start --cpus 4 --memory 8g
 
 .PHONY: spark_ops
 spark_ops: minikube
@@ -30,8 +30,10 @@ del_spark_ops:
 	@kubectl delete ns $(SPARK_OPS_NS) $(SPARK_JOB_NS)
 
 spark_app:
-	@kubectl delete -f $(SPARK_JOB_CF) -n $(SPARK_JOB_NS)
+	@kubectl delete -f $(SPARK_JOB_CF) -n $(SPARK_JOB_NS) --ignore-not-found=true
 	@kubectl apply -f $(SPARK_JOB_CF) -n $(SPARK_JOB_NS)
 
-
+get_app:
+	@kubectl logs -n $(SPARK_JOB_NS) spark-pi-driver 
+	@kubectl describe SparkApplication -n $(SPARK_JOB_NS) 
 
