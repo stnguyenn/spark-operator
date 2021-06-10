@@ -6,6 +6,9 @@ SPARK_OPS_RL=sparkops
 SPARK_JOB_CF=./spark-on-k8s-operator/examples/spark-pi-prometheus.yaml
 APP_SA=spark
 
+K=kubectl
+POD=spark-pi-driver
+
 .PHONY: default
 default:
 	@echo hello spark
@@ -15,10 +18,10 @@ minikube:
 	@minikube start --cpus 4 --memory 8g
 
 .PHONY: spark_ops
-spark_ops: minikube
-	@kubectl create ns $(SPARK_JOB_NS)
-	@kubectl create serviceaccount $(APP_SA) --namespace=$(SPARK_JOB_NS) 
-	@kubectl create clusterrolebinding $(SPARK_JOB_NS)-role \
+spark_ops: 
+	@$(K) create ns $(SPARK_JOB_NS)
+	@$(K) create serviceaccount $(APP_SA) --namespace=$(SPARK_JOB_NS) 
+	@$(K) create clusterrolebinding $(SPARK_JOB_NS)-role \
 		--clusterrole=edit \
 		--serviceaccount=$(SPARK_JOB_NS):$(APP_SA) \
 		--namespace=$(SPARK_JOB_NS)		
@@ -27,13 +30,14 @@ spark_ops: minikube
 .PHONY: del_spark_ops
 del_spark_ops:
 	@helm delete $(SPARK_OPS_RL) -n $(SPARK_OPS_NS)
-	@kubectl delete ns $(SPARK_OPS_NS) $(SPARK_JOB_NS)
+	@$(K) delete ns $(SPARK_OPS_NS) $(SPARK_JOB_NS)
 
 spark_app:
-	@kubectl delete -f $(SPARK_JOB_CF) -n $(SPARK_JOB_NS) --ignore-not-found=true
-	@kubectl apply -f $(SPARK_JOB_CF) -n $(SPARK_JOB_NS)
+	@$(K) delete -f $(SPARK_JOB_CF) -n $(SPARK_JOB_NS) --ignore-not-found=true
+	@$(K) apply -f $(SPARK_JOB_CF) -n $(SPARK_JOB_NS)
 
 get_app:
-	@kubectl logs -n $(SPARK_JOB_NS) spark-pi-driver 
-	@kubectl describe SparkApplication -n $(SPARK_JOB_NS) 
+	@$(K) describe SparkApplication -n $(SPARK_JOB_NS) 
+	@$(K) describe pod $(POD) -n $(SPARK_JOB_NS)
+# @$(K) logs -n $(SPARK_JOB_NS) spark-pi-driver 
 
