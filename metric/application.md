@@ -39,7 +39,25 @@ spec:
 
 ## Prometheus Configuration
 
+The exposed metrics from SparkApplication could be collected via Prometheus deployment's scrape config.
+
 ```yaml
+## Prometheus server ConfigMap entries
+##
+serverFiles:
+  prometheus.yml:
+      - job_name: 'spark-apps'
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_name]
+            action: keep
+            regex: spark-app
+          - source_labels: [__address__]
+            action: replace
+            regex: ([^:]+):.*
+            replacement: $1:8090 # port you want to use
+            target_label: __address__  
 ```
 
 ## Metric Sample
